@@ -302,7 +302,7 @@ export default function Home() {
               }}
               onClick={handleButtonClick}
             >
-              let's go
+              let&apos;s go
             </button>
           </div>
         ) : (
