@@ -25,6 +25,19 @@ export default function Home() {
   // Relax section state
   const [currentMeditation, setCurrentMeditation] = useState<typeof meditationRoutines[0] | null>(null);
 
+  // Praise section state
+  const [selectedGender, setSelectedGender] = useState<string | null>(null);
+  const [currentPraiseMessage, setCurrentPraiseMessage] = useState("");
+  const [praiseMessageFading, setPraiseMessageFading] = useState(false);
+  const praiseMessages = [
+    "You did such a good job!",
+    "You did your best :3",
+    "I'm proud of you!",
+    "Keep going!",
+    "I hope you win the next one!",
+    "Never give up! :3"
+  ];
+
   // Get a random supportive message
   const getRandomMessage = () => {
     const randomIndex = Math.floor(Math.random() * supportiveMessages.length);
@@ -35,6 +48,12 @@ export default function Home() {
   const getRandomMeditation = () => {
     const randomIndex = Math.floor(Math.random() * meditationRoutines.length);
     return meditationRoutines[randomIndex];
+  };
+  
+  // Get a random praise message
+  const getRandomPraiseMessage = () => {
+    const randomIndex = Math.floor(Math.random() * praiseMessages.length);
+    return praiseMessages[randomIndex];
   };
   
   // Handle changing the message with animation
@@ -55,7 +74,23 @@ export default function Home() {
     if (selectedSection === 'relax' && !currentMeditation) {
       setCurrentMeditation(getRandomMeditation());
     }
-  }, [selectedSection, currentMessage, currentMeditation]);
+
+    // Initialize praise message cycling when gender is selected
+    if (selectedSection === 'praise' && selectedGender && currentPraiseMessage === "") {
+      setCurrentPraiseMessage(getRandomPraiseMessage());
+      
+      // Set up the praise message cycling
+      const messageInterval = setInterval(() => {
+        setPraiseMessageFading(true);
+        setTimeout(() => {
+          setCurrentPraiseMessage(getRandomPraiseMessage());
+          setPraiseMessageFading(false);
+        }, 500); // Match the CSS transition duration
+      }, 3000); // Change message every 3 seconds
+      
+      return () => clearInterval(messageInterval);
+    }
+  }, [selectedSection, currentMessage, currentMeditation, selectedGender, currentPraiseMessage]);
 
   const handleButtonClick = () => {
     setFadeOutInitial(true);
@@ -77,7 +112,17 @@ export default function Home() {
       if (section === 'relax') {
         setCurrentMeditation(null);
       }
+      // Reset gender when selecting Praise section
+      if (section === 'praise') {
+        setSelectedGender(null);
+        setCurrentPraiseMessage("");
+      }
     }, 1000); // Wait for fade out to complete
+  };
+
+  const handleGenderSelect = (gender: string) => {
+    setSelectedGender(gender);
+    setCurrentPraiseMessage("");
   };
 
   const handleBackClick = () => {
@@ -87,9 +132,20 @@ export default function Home() {
       setFadeContent(false);
       setCurrentMessage(""); // Reset message when going back
       setCurrentMeditation(null); // Reset meditation when going back
+      setSelectedGender(null); // Reset gender when going back
+      setCurrentPraiseMessage(""); // Reset praise message when going back
       setSectionsVisible(true);
       setFadeSections(false);
     }, 1000); // Wait for content fade out to complete
+  };
+
+  const handleBackFromGender = () => {
+    setFadeContent(true);
+    setTimeout(() => {
+      setSelectedGender(null);
+      setCurrentPraiseMessage("");
+      setFadeContent(false);
+    }, 1000);
   };
   
   const handleDoneClick = () => {
@@ -187,6 +243,160 @@ export default function Home() {
             </div>
           </div>
         );
+      
+      case 'praise':
+        if (!selectedGender) {
+          // Gender selection screen
+          return (
+            <div 
+              className={`${styles.contentContainer} ${fadeContent ? styles.contentFadeOut : styles.contentFadeIn}`}
+              style={{ 
+                width: "550px",
+                maxWidth: "90vw",
+                minWidth: "500px",
+              }}
+            >
+              <h2 className={styles.contentTitle} style={{ fontFamily: "var(--font-jura)" }}>
+                Choose Your Praise
+              </h2>
+              
+              <div className="flex justify-center items-center gap-8 mt-6">
+                <button 
+                  className={`${styles.backButton} ${styles.sectionDelay1}`}
+                  onClick={() => handleGenderSelect('male')}
+                  aria-label="Male option"
+                  style={{
+                    fontFamily: "var(--font-jura)",
+                    width: "120px",
+                    height: "120px",
+                    padding: "12px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "10px"
+                  }}
+                >
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="10" cy="14" r="7.5" stroke="white" strokeWidth="1.5"/>
+                    <path d="M14.5 9.5L21 3" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+                    <path d="M17 3H21V7" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <span>Male</span>
+                </button>
+                
+                <button 
+                  className={`${styles.backButton} ${styles.sectionDelay2}`}
+                  onClick={() => handleGenderSelect('female')}
+                  aria-label="Female option"
+                  style={{
+                    fontFamily: "var(--font-jura)",
+                    width: "120px",
+                    height: "120px",
+                    padding: "12px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "10px"
+                  }}
+                >
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="9" r="7.5" stroke="white" strokeWidth="1.5"/>
+                    <path d="M12 16.5V22" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+                    <path d="M9 19.5H15" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
+                  <span>Female</span>
+                </button>
+                
+                <button 
+                  className={`${styles.backButton} ${styles.sectionDelay3}`}
+                  onClick={() => handleGenderSelect('nonbinary')}
+                  aria-label="Other option"
+                  style={{
+                    fontFamily: "var(--font-jura)",
+                    width: "120px",
+                    height: "120px",
+                    padding: "12px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "10px"
+                  }}
+                >
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 21.35L10.55 20.03C5.4 15.36 2 12.28 2 8.5C2 5.42 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.09C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.42 22 8.5C22 12.28 18.6 15.36 13.45 20.04L12 21.35Z" stroke="white" strokeWidth="1.5" fill="none"/>
+                  </svg>
+                  <span>Other</span>
+                </button>
+              </div>
+              
+              <div className="flex justify-center mt-8">
+                <button 
+                  className={styles.backButton}
+                  style={{ 
+                    fontFamily: "var(--font-jura)",
+                    padding: "8px 16px",
+                    width: "auto"
+                  }}
+                  onClick={handleBackClick}
+                  aria-label="Return to options menu"
+                >
+                  ← Back to options
+                </button>
+              </div>
+            </div>
+          );
+        } else {
+          // Praise message screen
+          let praiseTitleText = "Good puppy.";
+          if (selectedGender === 'male') {
+            praiseTitleText = "Good boy.";
+          } else if (selectedGender === 'female') {
+            praiseTitleText = "Good girl.";
+          }
+          
+          return (
+            <div 
+              className={`${styles.contentContainer} ${fadeContent ? styles.contentFadeOut : styles.contentFadeIn}`}
+              style={{ 
+                width: "500px",       // Fixed width instead of maxWidth
+                maxWidth: "90vw",     // Responsive limit for small screens
+                minWidth: "500px",     // Ensure it doesn't get too small
+               
+              }}
+            >
+              <h2 className={styles.contentTitle} style={{ fontFamily: "var(--font-jura)", fontSize: "2.5rem"}}>
+                {praiseTitleText}
+              </h2>
+              
+              <div className={styles.messageContainer}>
+                <p 
+                  className={`${styles.message} ${praiseMessageFading ? styles.messageFadeOut : styles.messageFadeIn}`}
+                  style={{ fontFamily: "var(--font-jura)", fontSize: "1.75rem" }}
+                >
+                  {currentPraiseMessage}
+                </p>
+              </div>
+              
+              <div className="flex justify-center px-4 mt-8" style={{ minHeight: "40px" }}>
+                <button 
+                  className={styles.backButton}
+                  style={{ 
+                    fontFamily: "var(--font-jura)",
+                    padding: "8px 16px",
+                    width: "auto"
+                  }}
+                  onClick={handleBackFromGender}
+                  aria-label="Return to gender selection"
+                >
+                  ← Go back
+                </button>
+              </div>
+            </div>
+          );
+        }
       
       case 'reflect':
         return (
@@ -344,6 +554,18 @@ export default function Home() {
                       </h2>
                       <p className={styles.sectionText} style={{ fontFamily: "var(--font-jura)" }}>
                         Help me reflect on my games
+                      </p>
+                    </div>
+                    
+                    <div 
+                      className={`${styles.section} cursor-pointer hover:transform hover:scale-105 transition-transform ${styles.sectionDelay4}`}
+                      onClick={() => handleSectionClick('praise')}
+                    >
+                      <h2 className={styles.sectionTitle} style={{ fontFamily: "var(--font-jura)", fontWeight: 600 }}>
+                        Praise Me
+                      </h2>
+                      <p className={styles.sectionText} style={{ fontFamily: "var(--font-jura)" }}>
+                        :3
                       </p>
                     </div>
                   </div>

@@ -1,0 +1,56 @@
+/* Base gender button styles */
+.genderButton {
+  backdrop-filter: blur(10px);
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  opacity: 0;
+  animation: fadeIn 0.5s ease forwards;
+}
+
+/* Male button */
+.maleButton {
+  background: rgba(0, 122, 255, 0.2);
+  border: 2px solid rgba(0, 122, 255, 0.6);
+  box-shadow: 0 0 15px rgba(0, 122, 255, 0.4);
+}
+
+.maleButton:hover {
+  transform: scale(1.1);
+  background: rgba(0, 122, 255, 0.3);
+  box-shadow: 0 0 20px rgba(0, 122, 255, 0.6);
+}
+
+/* Female button */
+.femaleButton {
+  background: rgba(255, 45, 85, 0.2);
+  border: 2px solid rgba(255, 45, 85, 0.6);
+  box-shadow: 0 0 15px rgba(255, 45, 85, 0.4);
+}
+
+.femaleButton:hover {
+  transform: scale(1.1);
+  background: rgba(255, 45, 85, 0.3);
+  box-shadow: 0 0 20px rgba(255, 45, 85, 0.6);
+}
+
+/* Nonbinary button */
+.nonbinaryButton {
+  background: rgba(150, 120, 255, 0.2);
+  border: 2px solid rgba(150, 120, 255, 0.6);
+  box-shadow: 0 0 15px rgba(150, 120, 255, 0.4);
+}
+
+.nonbinaryButton:hover {
+  transform: scale(1.1);
+  background: rgba(150, 120, 255, 0.3);
+  box-shadow: 0 0 20px rgba(150, 120, 255, 0.6);
+}
+
+.sectionDelay4 {
+  animation-delay: 0.8s;
+} 
